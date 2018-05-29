@@ -20,7 +20,8 @@ import datetime as dt
 
 ''' Dataframes '''
 # Create dataframe from csv file
-df = pd.read_csv('results.csv',
+csv_input_file = 'results.csv'
+df = pd.read_csv(csv_input_file,
                 sep=';',
                 usecols=['race',
                          'cat',
@@ -60,6 +61,21 @@ app.layout = html.Div([
         html.Div([
                 
             html.H1('Race Results Analysis'),
+            
+            html.H3('Add a new entry'),
+            
+            html.Div(
+                    [dcc.Input(
+                            id='new_race',
+                            placeholder='Enter Race Name...',
+                            type='text',
+                            value=''
+                            ),
+                     html.Button('Submit', id='button'),
+                     html.Div(id='output-container-button',
+                              children='Enter the values and press submit')
+                    ]
+                    ),
             
             html.H2('Veloviewer Score'),
             
@@ -101,6 +117,21 @@ app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
 
 # Loading screen CSS
 app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/brPBPO.css"})
+
+@app.callback(
+    dash.dependencies.Output('output-container-button', 'children'),
+    [dash.dependencies.Input('button', 'n_clicks')],
+    [dash.dependencies.State('new_race', 'value')])
+
+def update_output(n_clicks, value):
+    if n_clicks == None:
+        return('No new data entered')
+    else:
+        
+        return 'Race "{}" was added to {} with clicks'.format(
+                                                value,
+                                                csv_input_file
+                                                )
 
 @app.callback(
         Output(component_id='score_graph', component_property='figure'),
